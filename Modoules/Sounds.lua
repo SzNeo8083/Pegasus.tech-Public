@@ -63,7 +63,7 @@ task.spawn(function()
 	local files = table.create(1); do
 		files.sounds = listfiles(Directories.Sound)
 
-		if (#files.sounds == 0) then
+		if (#files.sounds == #Sound_Object.HitSoundNames) then
 			for index, sound in next, Sound_Object.HitSoundNames do 
 				writefile(Directories.Sound.. "/" .. sound, game:HttpGet("https://raw.githubusercontent.com/SzNeo8083/SzNeo8083.github.io/main/sounds/" .. sound))
 				print("downloaded "..sound)
