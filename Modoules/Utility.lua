@@ -10,6 +10,9 @@ function Utility_object:QuickInstance(Class, Data)
 end;
 
 function Utility_object:RgbToHex(color)
+    if typeof(color) == "Color3" then
+        color = { R = color.R, G = color.G, B = color.B }
+    end
     local r = math.round(color.R * 255)
     local g = math.round(color.G * 255)
     local b = math.round(color.B * 255)
@@ -17,6 +20,12 @@ function Utility_object:RgbToHex(color)
 end
 
 function Utility_object:lerpColor(value, colorA, colorB)
+    if typeof(colorA) == "Color3" then
+        colorA = { R = colorA.R, G = colorA.G, B = colorA.B }
+    end
+    if typeof(colorB) == "Color3" then
+        colorB = { R = colorB.R, G = colorB.G, B = colorB.B }
+    end
     value = math.clamp(value,0,100)
     local t = value / 100
     local r = math.round(colorA.R * 255 * (1 - t) + colorB.R * 255 * t)
