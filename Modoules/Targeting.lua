@@ -81,7 +81,7 @@ if not LPH_OBFUSCATED then
 			return {}
 		end
 	end
-end 
+end
 
 local Directories = getgenv().Modules.Directories
 local RayModule = getgenv().Modules.RayCasting
@@ -98,11 +98,11 @@ local UserInputService = game.GetService(game, "UserInputService")
 local HttpService = game.GetService(game, "HttpService")
 local GuiService = game.GetService(game, "GuiService")
 local soundService = game.GetService(game, "SoundService")
-local Lighting = game.GetService(game,"Lighting")
+local Lighting = game.GetService(game, "Lighting")
 local Stats = cloneref(game:GetService("Stats"))
 local Terrain = workspace.Terrain
 
-local Camera = Workspace.CurrentCamera 
+local Camera = Workspace.CurrentCamera
 local viewportSize = Camera.ViewportSize
 local Client = Players.LocalPlayer
 local Mouse = Client:GetMouse()
@@ -120,135 +120,188 @@ local Targeting_Object = {}
 Targeting_Object.__index = Targeting_Object
 
 if game.GameId == 113491250 then -- PHANTOM FORCES
-    function Targeting_Object:get_character(entry)
-        if not entry then return nil end
-        if not entry:getThirdPersonObject() then return nil end
-        return entry:getThirdPersonObject()
-    end
+	function Targeting_Object:get_character(entry)
+		if not entry then
+			return nil
+		end
+		if not entry:getThirdPersonObject() then
+			return nil
+		end
+		return entry:getThirdPersonObject()
+	end
 
-    function Targeting_Object:is_friendly(entry)
-        return not entry:isEnemy() --entry:IsEneny(); -- not not needed
-    end
+	function Targeting_Object:is_friendly(entry)
+		return not entry:isEnemy() --entry:IsEneny(); -- not not needed
+	end
 
-    function Targeting_Object:get_health(entry)
-        return entry:getHealth()
-    end
+	function Targeting_Object:get_health(entry)
+		return entry:getHealth()
+	end
 
-    function Targeting_Object:getPart(Entry,part)
-        if part == "Root" then
-            part = "Torso"
-        end
-        return Entry:getBodyPart(part)
-    end
+	function Targeting_Object:getPart(Entry, part)
+		if part == "Root" then
+			part = "Torso"
+		end
+		return Entry:getBodyPart(part)
+	end
 
-    function Targeting_Object:getName(entry)
-		if not entry then return end
+	function Targeting_Object:getName(entry)
+		if not entry then
+			return
+		end
 
 		return tostring(entry._player)
 	end
-    --
-else -- uni
-    function Targeting_Object:get_character(player)
-        --print("called",player)
-        if player.Character then
-            return player.Character
-        end
-        return nil
-    end
+	--
+elseif game.GameId == 7633926880 then -- BS
+	function Targeting_Object:get_character(player)
+		--print("called",player)
+		if player.Character then
+			return player.Character
+		end
+		return nil
+	end
 
-    function Targeting_Object:get_weapon(player)
-        --print("called",player)
-        if player.Character and player.Character:FindFirstChild("EquippedTool") then
-            return player.Character.EquippedTool.Value
-        end
-        return "None"
-    end
+	function Targeting_Object:get_weapon(player)
+		--print("called",player)
+		if player.Character and player.Character:FindFirstChild("EquippedTool") then
+			return player.Character.EquippedTool.Value
+		end
+		return "None"
+	end
 
-    function Targeting_Object:is_friendly(player)
-        return player.Team and player.Team == Client.Team
-    end
+	function Targeting_Object:is_friendly(player)
+		return player:GetAttribute("Team") and player:GetAttribute("Team") == Client:GetAttribute("Team")
+	end
 
-    function Targeting_Object:get_health(player)
-        if player.Character then
-            local hum = player.Character:FindFirstChild("Humanoid")
-            if hum then
-                return hum.Health,hum.MaxHealth
-            end
-        end
-        return 100,100
-    end
+	function Targeting_Object:get_health(player)
+		if player.Character then
+			local hum = player.Character:FindFirstChildOfClass("Humanoid")
+			if hum then
+				return hum.Health, hum.MaxHealth
+			end
+		end
+		return 50, 100
+	end
 
-    function Targeting_Object:getPart(character,part)
-        if part == "Root" then
-            part = "HumanoidRootPart"
-        end
-        return game.FindFirstChild(character,part)
-    end
+	function Targeting_Object:getPart(character, part)
+		if part == "Root" or part == "HumanoidRootPart" then
+			part = "UpperTorso"
+		end
+		return game.FindFirstChild(character, part)
+	end
 
-    function Targeting_Object:getName(entry)
-		if not entry then return end
+	function Targeting_Object:getName(entry)
+		if not entry then
+			return
+		end
 
 		return tostring(entry.Name)
 	end
-    --
+else -- uni
+	function Targeting_Object:get_character(player)
+		--print("called",player)
+		if player.Character then
+			return player.Character
+		end
+		return nil
+	end
+
+	function Targeting_Object:get_weapon(player)
+		--print("called",player)
+		if player.Character and player.Character:FindFirstChild("EquippedTool") then
+			return player.Character.EquippedTool.Value
+		end
+		return "None"
+	end
+
+	function Targeting_Object:is_friendly(player)
+		return player.Team and player.Team == Client.Team
+	end
+
+	function Targeting_Object:get_health(player)
+		if player.Character then
+			local hum = player.Character:FindFirstChild("Humanoid")
+			if hum then
+				return hum.Health, hum.MaxHealth
+			end
+		end
+		return 100, 100
+	end
+
+	function Targeting_Object:getPart(character, part)
+		if part == "Root" then
+			part = "HumanoidRootPart"
+		end
+		return game.FindFirstChild(character, part)
+	end
+
+	function Targeting_Object:getName(entry)
+		if not entry then
+			return
+		end
+
+		return tostring(entry.Name)
+	end
+	--
 end
 
-function Targeting_Object:getClosestPlayerToCenter(PlayerTable,PartList,MaxRange,MaxScreenPoint,MinScreenPoint) -- PartList
-    local TargetData = {}
+function Targeting_Object:getClosestPlayerToCenter(PlayerTable, PartList, MaxRange, MaxScreenPoint, MinScreenPoint) -- PartList
+	local TargetData = {}
 	local smallest = math.huge
-    local smallest2 = math.huge
-									
-    for i, player in pairs(PlayerTable) do
-        if self:is_friendly(player) then
-            continue
-        end
+	local smallest2 = math.huge
 
-        if table.find(Entities.whitelist,self:getName(player)) then
-            --print("skipped whitelist entry")
-            continue
-        end
+	for i, player in pairs(PlayerTable) do
+		if self:is_friendly(player) then
+			continue
+		end
 
-        local Char = self:get_character(player)
+		if table.find(Entities.whitelist, self:getName(player)) then
+			--print("skipped whitelist entry")
+			continue
+		end
 
-        if not Char then
-            continue
-        end
+		local Char = self:get_character(player)
 
-        local root = self:getPart(Char,"Root")
+		if not Char then
+			continue
+		end
 
-        if not root then
-            continue
-        end
+		local root = self:getPart(Char, "Root")
 
-        local healt,_ = self:get_health(player)
+		if not root then
+			continue
+		end
 
-        if not (healt > 0) then
-            continue
-        end
+		local healt, _ = self:get_health(player)
 
-        local WorldPosition = root.CFrame.p
+		if not (healt > 0) then
+			continue
+		end
 
-        if not WorldPosition then
-            continue
-        end
+		local WorldPosition = root.CFrame.p
 
-        local WorldDistance = (Camera.CFrame.p - WorldPosition).Magnitude
+		if not WorldPosition then
+			continue
+		end
 
-        local screenPoint,onscreen = Camera:WorldToViewportPoint(WorldPosition)
+		local WorldDistance = (Camera.CFrame.p - WorldPosition).Magnitude
 
-        if not onscreen then
-            continue
-        end
+		local screenPoint, onscreen = Camera:WorldToViewportPoint(WorldPosition)
 
-        local screendistance = (Vector2.new(screenPoint.X, screenPoint.Y) - screenCenter).Magnitude
-        local part
+		if not onscreen then
+			continue
+		end
 
-        if #PartList == 0 then
-            part = self:getPart(Char,"Head")
-        else
+		local screendistance = (Vector2.new(screenPoint.X, screenPoint.Y) - screenCenter).Magnitude
+		local part
+
+		if #PartList == 0 then
+			part = self:getPart(Char, "Head")
+		else
 			for _, ListPart in PartList do
-                local realpart = self:getPart(Char,ListPart)
-				if (not realpart) then
+				local realpart = self:getPart(Char, ListPart)
+				if not realpart then
 					continue
 				end
 
@@ -259,90 +312,94 @@ function Targeting_Object:getClosestPlayerToCenter(PlayerTable,PartList,MaxRange
 					part = realpart
 				end
 			end
-        end
+		end
 
-        if not part then
-            continue
-        end
+		if not part then
+			continue
+		end
 
-        local isVisible = RayModule:IsPartVisible(Camera.CFrame.p,part)
+		local isVisible = RayModule:IsPartVisible(Camera.CFrame.p, part)
 
-        -- Main logic here after compleitng all the checks to validate any targets left in the table
+		-- Main logic here after compleitng all the checks to validate any targets left in the table
 
-        if (WorldDistance < MaxRange) and (screendistance < MaxScreenPoint) and (screendistance > MinScreenPoint) and (screendistance < smallest) then
-            smallest = screendistance
-            TargetData = { 
-                ["Part"] = part,
-                ["Player"] = player,
-                ["Character"] = Char,
-                ["WorldPosition"] = WorldPosition,
-                ["ScreenPoint"] = screenPoint,
-                ["Visible"] = isVisible,
-            }
-        end
-
-    end
-    --table.foreach(TargetData,print)
-    return TargetData
+		if
+			(WorldDistance < MaxRange)
+			and (screendistance < MaxScreenPoint)
+			and (screendistance > MinScreenPoint)
+			and (screendistance < smallest)
+		then
+			smallest = screendistance
+			TargetData = {
+				["Part"] = part,
+				["Player"] = player,
+				["Character"] = Char,
+				["WorldPosition"] = WorldPosition,
+				["ScreenPoint"] = screenPoint,
+				["Visible"] = isVisible,
+			}
+		end
+	end
+	--table.foreach(TargetData,print)
+	return TargetData
 end
 
-function Targeting_Object:getClosestPlayerToMouse(PlayerTable,PartList,MaxRange,MaxScreenPoint,MinScreenPoint) -- PartList
-    local TargetData = {}
+function Targeting_Object:getClosestPlayerToMouse(PlayerTable, PartList, MaxRange, MaxScreenPoint, MinScreenPoint) -- PartList
+	local TargetData = {}
 	local smallest = math.huge
-    local smallest2 = math.huge
-    local screenCenter = UserInputService:GetMouseLocation()
-									
-    for i, player in pairs(PlayerTable) do
-        if self:is_friendly(player) then
-            continue
-        end
+	local smallest2 = math.huge
+	local screenCenter = UserInputService:GetMouseLocation()
 
-        if table.find(Entities.whitelist,self:getName(player)) then
-            --print("skipped whitelist entry")
-            continue
-        end
+	for i, player in pairs(PlayerTable) do
+		if self:is_friendly(player) then
+			continue
+		end
 
-        local Char = self:get_character(player)
+		if table.find(Entities.whitelist, self:getName(player)) then
+			--print("skipped whitelist entry")
+			continue
+		end
 
-        if not Char then
-            continue
-        end
+		local Char = self:get_character(player)
 
-        local root = self:getPart(Char,"Root")
+		if not Char then
+			continue
+		end
 
-        if not root then
-            continue
-        end
+		local root = self:getPart(Char, "Root")
 
-        local healt,_ = self:get_health(player)
+		if not root then
+			continue
+		end
 
-        if not (healt > 0) then
-            continue
-        end
+		local healt, _ = self:get_health(player)
 
-        local WorldPosition = root.CFrame.p
+		if not (healt > 0) then
+			continue
+		end
 
-        if not WorldPosition then
-            continue
-        end
+		local WorldPosition = root.CFrame.p
 
-        local WorldDistance = (Camera.CFrame.p - WorldPosition).Magnitude
+		if not WorldPosition then
+			continue
+		end
 
-        local screenPoint,onscreen = Camera:WorldToViewportPoint(WorldPosition)
+		local WorldDistance = (Camera.CFrame.p - WorldPosition).Magnitude
 
-        if not onscreen then
-            continue
-        end
+		local screenPoint, onscreen = Camera:WorldToViewportPoint(WorldPosition)
 
-        local screendistance = (Vector2.new(screenPoint.X, screenPoint.Y) - screenCenter).Magnitude
-        local part
+		if not onscreen then
+			continue
+		end
 
-        if #PartList == 0 then
-            part = self:getPart(Char,"Head")
-        else
+		local screendistance = (Vector2.new(screenPoint.X, screenPoint.Y) - screenCenter).Magnitude
+		local part
+
+		if #PartList == 0 then
+			part = self:getPart(Char, "Head")
+		else
 			for _, ListPart in PartList do
-                local realpart = self:getPart(Char,ListPart)
-				if (not realpart) then
+				local realpart = self:getPart(Char, ListPart)
+				if not realpart then
 					continue
 				end
 
@@ -353,33 +410,36 @@ function Targeting_Object:getClosestPlayerToMouse(PlayerTable,PartList,MaxRange,
 					part = realpart
 				end
 			end
-        end
+		end
 
-        if not part then
-            continue
-        end
+		if not part then
+			continue
+		end
 
-        local isVisible = RayModule:IsPartVisible(Camera.CFrame.p,part)
+		local isVisible = RayModule:IsPartVisible(Camera.CFrame.p, part)
 
-        -- Main logic here after compleitng all the checks to validate any targets left in the table
+		-- Main logic here after compleitng all the checks to validate any targets left in the table
 
-        if (WorldDistance < MaxRange) and (screendistance < MaxScreenPoint) and (screendistance > MinScreenPoint) and (screendistance < smallest) then
-            smallest = screendistance
-            TargetData = { 
-                ["Part"] = part,
-                ["Player"] = player,
-                ["Character"] = Char,
-                ["WorldPosition"] = WorldPosition,
-                ["ScreenPoint"] = screenPoint,
-                ["Visible"] = isVisible,
-            }
-        end
-
-    end
-    --table.foreach(TargetData,print)
-    return TargetData
+		if
+			(WorldDistance < MaxRange)
+			and (screendistance < MaxScreenPoint)
+			and (screendistance > MinScreenPoint)
+			and (screendistance < smallest)
+		then
+			smallest = screendistance
+			TargetData = {
+				["Part"] = part,
+				["Player"] = player,
+				["Character"] = Char,
+				["WorldPosition"] = WorldPosition,
+				["ScreenPoint"] = screenPoint,
+				["Visible"] = isVisible,
+			}
+		end
+	end
+	--table.foreach(TargetData,print)
+	return TargetData
 end
 
 getgenv().Modules.Targeting = Targeting_Object
 return Targeting_Object
-
