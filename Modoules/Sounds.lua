@@ -57,16 +57,22 @@ Sound_Object.HitSoundNames = {
 	"Tch.mp3";
 	"MinecraftHit.mp3";
 	"Wood.mp3";
-};
+}
 
-task.spawn(function() 
-	local files = table.create(1); do
+task.spawn(function()
+	local files = table.create(1)
+	do
 		files.sounds = listfiles(Directories.Sound)
 
-		if (#files.sounds < #Sound_Object.HitSoundNames) then
-			for index, sound in next, Sound_Object.HitSoundNames do 
-				writefile(Directories.Sound.. "/" .. sound, game:HttpGet("https://raw.githubusercontent.com/SzNeo8083/SzNeo8083.github.io/main/sounds/" .. sound))
-				print("downloaded "..sound)
+		if #files.sounds ~= #Sound_Object.HitSoundNames then
+			for index, sound in next, Sound_Object.HitSoundNames do
+				writefile(
+					Directories.Sound .. "/" .. sound,
+					game:HttpGet(
+						"https://raw.githubusercontent.com/SzNeo8083/SzNeo8083.github.io/main/sounds/" .. sound
+					)
+				)
+				print("downloaded " .. sound)
 			end
 		end
 	end
@@ -93,8 +99,7 @@ function Sound_Object:CreateAudio(parent, audioname, volume, pitch)
 
 	new_sound:Play()
 
-	task.spawn(function()
-		wait(5)
+	task.delay(5, function()
 		new_sound:Destroy()
 	end)
 end
