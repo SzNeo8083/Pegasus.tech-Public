@@ -1,1 +1,19 @@
-("LuaProt V2 Loader - Unauthorized tampering or debugging of protected scripts is strictly prohibited. Violators will be blacklisted."):sub(1,1);if not lp_key then lp_key="x"end;LP_NODE=((os.time(os.date("*t"))-os.time(os.date("!*t")))>=0) and "eu-1" or "us-1";local d=(http and http.request) or request or http_request;local b;task.spawn(function() b=d({Url="https://"..LP_NODE..".luaprot.net/api/v2/loader/get?key="..lp_key.."&scriptId=29966998712463205955"}); end);local e=os.clock();repeat task.wait(); until(os.clock()-e>3.5 or b);local a=function(r) while(task.wait())do pcall(function() game:GetService("Players").LocalPlayer:Kick(r);local g=game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ErrorPrompt;g.TitleFrame.ErrorTitle.Text="LuaProt";g.MessageArea.ErrorFrame.ErrorMessage.Text=r; end); end; end;if(not b or (b.StatusCode~=200 and b.statusCode~=200))then LP_NODE=(LP_NODE=="eu-1" and "us-1") or "eu-1";task.spawn(function() b=d({Url="https://"..LP_NODE..".luaprot.net/api/v2/loader/get?key="..lp_key.."&scriptId=29966998712463205955"}); end);e=os.clock();repeat task.wait(); until(os.clock()-e>5 or b);if(not b or (b.StatusCode~=200 and b.statusCode~=200))then return a("Unable to get script loader."); end; end;local c;if(not pcall(function() c=loadstring(b.Body); end))then return a("Unable to load script loader."); end;if(typeof(c)~="function")then return a("Loader error: "..tostring(c):sub(1,100)); end;c(LP_NODE);
+
+--[[
+
+You can upload this file on your github, pastebin, anywhere you want and generate a loadstring.
+    
+Add 'lp_key' variable if your user has a key on top of this loader.
+
+You can remove this message block as you like.
+
+
+ _                ____            _   
+| |   _   _  __ _|  _ \ _ __ ___ | |_ 
+| |  | | | |/ _` | |_) | '__/ _ \| __|
+| |__| |_| | (_| |  __/| | | (_) | |_ 
+|_____\__,_|\__,_|_|   |_|  \___/ \__|
+                                    
+
+]]--
+("LuaProt V2 Loader - Unauthorized tampering or debugging of protected scripts is strictly prohibited and will result in a global blacklist from all LuaProt protected scripts."):sub(1,1);local f=("36259776683223037581");if(not lp_key)then lp_key="x"; end;local c=(http and http.request) or request;local v=function(h) while(task.wait())do pcall(function() game:GetService("Players").LocalPlayer:Kick(h);local v=game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ErrorPrompt;v.TitleFrame.ErrorTitle.Text="LuaProt";v.MessageArea.ErrorFrame.ErrorMessage.Text=h; end); end; end;if(not f)then return v("Missing script id."); end;local b;local o={"eu-1","eu-2","us-1"};local h,k=pcall(function() return c({Url="https://eu-1.luaprot.net/api/v1/nodes/get"}); end);if(h and k and k.StatusCode==200)then local b;pcall(function() b=game:GetService("HttpService"):JSONDecode(k.Body); end);if(b and b.success and b.node)then for i,n in o do if(n==b.node)then table.remove(o,i);table.insert(o,1,b.node);break; end; end; end; end;for _,p in o do local r=os.clock();local y;task.spawn(pcall,function() y=c({Url="https://"..p..".luaprot.net/api/v2/loader/get?key="..lp_key.."&scriptId="..f}); end);repeat task.wait(); until(os.clock()-r>5 or y);if(y and ({[200]=true,[201]=true})[y.StatusCode])then LP_NODE=p;b=loadstring(y.Body);if(b)then break; end; end; end;if(b and LP_NODE)then b(LP_NODE); else v("V2 loader failed to load script. Report this and try again later!"); end;
