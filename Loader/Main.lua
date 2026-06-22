@@ -3,6 +3,7 @@ script_key = getgenv().script_key
 if game.GameId == 113491250 then -- pf
    print("Found Game Phnatom Forces")
 	local source = [[
+		script_key = getgenv().script_key
 		loadstring(game:HttpGet("https://api.luarmor.net/files/v4/loaders/fb376ba3f7b4fb7815128503025cb019.lua"))()
 	]]
 	
