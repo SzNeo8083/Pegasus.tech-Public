@@ -3,7 +3,7 @@ local script_key = getgenv().script_key
 if game.GameId == 113491250 then -- pf
 	print("Found Game Phnatom Forces")
 	local source = [[
-        script_key = readfile(pegasus_key.txt);
+        script_key = readfile("pegasus_key.txt");
 		loadstring(game:HttpGet("https://api.luarmor.net/files/v4/loaders/fb376ba3f7b4fb7815128503025cb019.lua"))()
 	]]
 
@@ -43,7 +43,7 @@ if game.GameId == 113491250 then -- pf
 elseif game.GameId == 7633926880 then -- bs
 	print("Found Game BloxStrike")
 	local source = [[
-        script_key = readfile(pegasus_key.txt);
+        script_key = readfile("pegasus_key.txt");
 		loadstring(game:HttpGet("https://api.luarmor.net/files/v4/loaders/35e09e24fc039b0d90ddd4ca30b0ede0.lua"))()
 	]]
 	loadstring(source)()
