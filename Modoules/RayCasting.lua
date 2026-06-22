@@ -7,39 +7,6 @@ local RaycastModule = {
     Instances = {};
 };
 
-local ManipulationOffsets = {
-    CFrame.new(3, 0, 0),         CFrame.new(-3, 0, 0),      CFrame.new(-6, 0, 0),
-    CFrame.new(6, 0, 0),         CFrame.new(3, 2, 0),       CFrame.new(-3, 2, 0),
-    CFrame.new(-6, 2, 0),        CFrame.new(6, 2, 0),       CFrame.new(4, 0, 0),
-    CFrame.new(-4, 2, 0),        CFrame.new(-4, 0, 0),      CFrame.new(4, 2, 0),
-    CFrame.new(7, 0, 0),         CFrame.new(-7, 2, 0),      CFrame.new(-7, 0, 0),
-    CFrame.new(7, 2, 0),         CFrame.new(0.2, 3.9, 0),   CFrame.new(1.8, 4.1, 1),
-    CFrame.new(2.1, 4.4, 1.1),   CFrame.new(0.15, 5.2, 0.1),CFrame.new(-1.8, 5.4, -0.2),
-    CFrame.new(-2.3, 6.35, -0.4),CFrame.new(0.1, 7.5, 0),   CFrame.new(0.1, 8, 0),
-    CFrame.new(0.1, 8, 0),
-};
-
-local UndergroundOffsets = {
-    CFrame.new(0, -1, 0), CFrame.new(0, -2, 0),
-    CFrame.new(0, -3, 0), CFrame.new(0, -4, 0),
-    CFrame.new(0, -5, 0),     CFrame.new( 0, -6,  0),   
-    CFrame.new( 0, -8,  0),
-    CFrame.new( 3, -2,  0),   CFrame.new(-3, -2,  0),
-    CFrame.new( 6, -3,  0),   CFrame.new(-6, -3,  0),
-    CFrame.new( 4, -2,  2),   CFrame.new(-4, -2, -2),
-
-    CFrame.new( 7, -5,  0),   CFrame.new(-7, -5,  0),
-    CFrame.new( 5, -6,  3),   CFrame.new(-5, -6, -3),
-    CFrame.new( 2, -7,  0),   CFrame.new(-2, -7,  0),
-
-    CFrame.new( 0, -8,  0),   CFrame.new( 0, -5,  0),
-    CFrame.new( 3, -9,  2),   CFrame.new(-3, -9, -2),
-    CFrame.new( 6, -10, 0),   CFrame.new(-6, -10, 0),
-
-    CFrame.new( 4, -8,  4),   CFrame.new(-4, -8, -4),
-    CFrame.new( 1, -10, 3),   CFrame.new(-1, -10, -3),
-}
-
 RaycastModule.__index = RaycastModule
 
 --// initial class builder
@@ -195,37 +162,6 @@ function RaycastModule:FindUndergroundVisiblePositionOnPart(Origin: CFrame, Part
     end
     return nil
 end;
-
-
---// Fallen trajectory simulation
-function RaycastModule:SimulateFallenTrajectory(Origin: Vector3, Destination: Vector3, Stats: table)
-    local Speed = Stats.Speed
-    local GravityScale = Stats.Gravity or 1
-    local Step = Stats.Step or (1/60)
-    local MaxTime = Stats.MaxTime or 5
-
-    local Gravity = Vector3.new(0, 196.2 * GravityScale, 0)
-    local Direction = Destination - Origin
-    if Direction.Magnitude == 0 then return {Origin} end
-
-    local Velocity = Direction.Unit * Speed
-    local Position = Origin
-    local Points = {Position}
-    local Time = 0
-
-    while Time < MaxTime do
-        local NextPosition = Position + Velocity * Step
-        table.insert(Points, NextPosition)
-
-        Velocity -= Gravity * Step
-        Position = NextPosition
-        Time += Step
-
-        if Position.Y <= Destination.Y and Velocity.Y < 0 then break end
-    end
-
-    return Points
-end
 
 getgenv().Modules.RayCasting = RaycastModule
 return RaycastModule
