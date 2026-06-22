@@ -1,4 +1,4 @@
---hello i am the loader
+-- hello i am the loader, why do you looking here mi friend?
 local script_key = getgenv().script_key
 if game.GameId == 113491250 then -- pf
 	print("Found Game Phnatom Forces")
@@ -48,3 +48,4 @@ elseif game.GameId == 7633926880 then -- bs
 	]]
 	loadstring(source)()
 end
+-- 🦀
